@@ -137,5 +137,4 @@ pub enum RegisterARM {
     SL = 76,
     FP = 77,
     IP = 78,
-
 }

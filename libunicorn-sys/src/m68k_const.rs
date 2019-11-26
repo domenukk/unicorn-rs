@@ -28,5 +28,4 @@ pub enum RegisterM68K {
     SR = 17,
     PC = 18,
     ENDING = 19,
-
 }

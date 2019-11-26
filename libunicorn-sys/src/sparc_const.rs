@@ -100,5 +100,4 @@ pub enum RegisterSPARC {
     ENDING = 89,
     // O6 = 84,
     // I6 = 67,
-
 }

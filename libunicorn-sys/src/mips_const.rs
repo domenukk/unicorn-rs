@@ -201,5 +201,4 @@ pub enum RegisterMIPS {
     // LO1 = 46,
     // LO2 = 47,
     // LO3 = 48,
-
 }

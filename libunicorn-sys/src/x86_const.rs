@@ -261,9 +261,8 @@ pub enum RegisterX86 {
     FS_BASE = 250,
     GS_BASE = 251,
     ENDING = 252,
-
-    // X86 instructions
 }
+    // X86 instructions
 
 #[repr(C)]
 #[derive(PartialEq, Debug, Clone, Copy)]
@@ -1608,5 +1607,4 @@ pub enum InsnX86 {
     FDISI8087_NOP = 1336,
     FENI8087_NOP = 1337,
     ENDING = 1338,
-
 }

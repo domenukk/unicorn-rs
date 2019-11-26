@@ -284,5 +284,4 @@ pub enum RegisterARM64 {
     IP1 = 216,
     FP = 1,
     LR = 2,
-
 }

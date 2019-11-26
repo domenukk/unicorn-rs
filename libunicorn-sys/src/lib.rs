@@ -2,8 +2,14 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
 pub mod unicorn_const;
+pub mod arm64_const;
+pub mod arm_const;
+pub mod m68k_const;
+pub mod mips_const;
+pub mod sparc_const;
+pub mod x86_const;
 
-use crate::unicorn_const::{Arch, Error, HookType, MemRegion, Mode, Query};
+use crate::unicorn_const::{Arch, Error, HookType, Mode, Query, Protection};
 use core::{fmt, slice};
 use libc::{c_char, c_int, c_void};
 
@@ -13,6 +19,17 @@ pub type uc_handle = libc::size_t;
 pub type uc_hook = libc::size_t;
 #[allow(non_camel_case_types)]
 pub type uc_context = libc::size_t;
+
+#[repr(C)]
+#[derive(Debug, Clone)]
+pub struct MemRegion {
+    /// The start address of the region (inclusive).
+    pub begin: u64,
+    /// The end address of the region (inclusive).
+    pub end: u64,
+    /// The memory permissions of the region.
+    pub perms: Protection,
+}
 
 extern "C" {
     pub fn uc_version(major: *mut u32, minor: *mut u32) -> u32;

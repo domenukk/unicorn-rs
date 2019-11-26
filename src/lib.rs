@@ -29,13 +29,6 @@
 
 use libunicorn_sys as ffi;
 
-mod arm64_const;
-mod arm_const;
-mod m68k_const;
-mod mips_const;
-mod sparc_const;
-mod x86_const;
-
 #[macro_use]
 mod macros;
 
@@ -201,7 +194,7 @@ pub trait Cpu<'a> {
     /// Add a code hook.
     fn add_code_hook<F>(
         &self,
-        hook_type: CodeHookType,
+        hook_type: HookType,
         begin: u64,
         end: u64,
         callback: F,
@@ -223,7 +216,7 @@ pub trait Cpu<'a> {
     /// Add a memory hook.
     fn add_mem_hook<F>(
         &self,
-        hook_type: MemHookType,
+        hook_type: HookType,
         begin: u64,
         end: u64,
         callback: F,
@@ -421,11 +414,6 @@ pub struct Unicorn<'a> {
     phantom: PhantomData<&'a libc::size_t>,
 }
 
-/// Returns a tuple `(major, minor)` for the bindings version number.
-pub fn bindings_version() -> (u32, u32) {
-    (BINDINGS_MAJOR, BINDINGS_MINOR)
-}
-
 /// Returns a tuple `(major, minor)` for the unicorn version number.
 pub fn unicorn_version() -> (u32, u32) {
     let (mut major, mut minor) = Default::default();
@@ -444,12 +432,6 @@ impl<'a> Unicorn<'a> {
     /// Create a new instance of the unicorn engine for the specified architecture
     /// and hardware mode.
     pub fn new(arch: Arch, mode: Mode) -> Result<Box<Self>> {
-        // Verify bindings compatibility with the core before going further.
-        let (major, minor) = unicorn_version();
-        if major != BINDINGS_MAJOR || minor != BINDINGS_MINOR {
-            return Err(Error::VERSION);
-        }
-
         let mut handle: libc::size_t = Default::default();
         let err = unsafe { uc_open(arch, mode, &mut handle) };
         if err == Error::OK {
@@ -672,7 +654,7 @@ impl<'a> Unicorn<'a> {
     /// Add a code hook.
     pub fn add_code_hook<F>(
         &self,
-        hook_type: CodeHookType,
+        hook_type: HookType,
         begin: u64,
         end: u64,
         callback: F,
@@ -739,7 +721,7 @@ impl<'a> Unicorn<'a> {
     /// Add a memory hook.
     pub fn add_mem_hook<F>(
         &self,
-        hook_type: MemHookType,
+        hook_type: HookType,
         begin: u64,
         end: u64,
         callback: F,
