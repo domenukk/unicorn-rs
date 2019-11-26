@@ -1,10 +1,16 @@
-// ARM64 registers
+#![allow(non_camel_case_types)]
+// For Unicorn Engine. AUTO-GENERATED FILE, DO NOT EDIT
+
 #[repr(C)]
 #[derive(PartialEq, Debug, Clone, Copy)]
 pub enum RegisterARM64 {
+
+
+    // ARM64 registers
+
     INVALID = 0,
-    FP = 1,
-    LR = 2,
+    // X29 = 1,
+    // X30 = 2,
     NZCV = 3,
     SP = 4,
     WSP = 5,
@@ -146,7 +152,7 @@ pub enum RegisterARM64 {
     S5 = 141,
     S6 = 142,
     S7 = 143,
-    S8 = 144,
+    // S8 = 144,
     S9 = 145,
     S10 = 146,
     S11 = 147,
@@ -217,8 +223,8 @@ pub enum RegisterARM64 {
     X13 = 212,
     X14 = 213,
     X15 = 214,
-    IP1 = 215,
-    IP0 = 216,
+    // X16 = 215,
+    // X17 = 216,
     X18 = 217,
     X19 = 218,
     X20 = 219,
@@ -265,4 +271,18 @@ pub enum RegisterARM64 {
 
     // pseudo registers
     PC = 260,
+    CPACR_EL1 = 261,
+
+    // thread registers
+    TPIDR_EL0 = 262,
+    TPIDRRO_EL0 = 263,
+    TPIDR_EL1 = 264,
+    ENDING = 265,
+
+    // alias registers
+    IP0 = 215,
+    IP1 = 216,
+    FP = 1,
+    LR = 2,
+
 }

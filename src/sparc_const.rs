@@ -1,7 +1,13 @@
-// SPARC registers
+#![allow(non_camel_case_types)]
+// For Unicorn Engine. AUTO-GENERATED FILE, DO NOT EDIT
+
 #[repr(C)]
 #[derive(PartialEq, Debug, Clone, Copy)]
 pub enum RegisterSPARC {
+
+
+    // SPARC registers
+
     INVALID = 0,
     F0 = 1,
     F1 = 2,
@@ -91,4 +97,8 @@ pub enum RegisterSPARC {
     Y = 86,
     XCC = 87,
     PC = 88,
+    ENDING = 89,
+    // O6 = 84,
+    // I6 = 67,
+
 }

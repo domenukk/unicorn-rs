@@ -1,9 +1,13 @@
 #![allow(non_camel_case_types)]
+// For Unicorn Engine. AUTO-GENERATED FILE, DO NOT EDIT
 
-// ARM registers
 #[repr(C)]
 #[derive(PartialEq, Debug, Clone, Copy)]
 pub enum RegisterARM {
+
+
+    // ARM registers
+
     INVALID = 0,
     APSR = 1,
     APSR_NZCV = 2,
@@ -79,10 +83,10 @@ pub enum RegisterARM {
     R6 = 72,
     R7 = 73,
     R8 = 74,
-    SB = 75,
-    SL = 76,
-    FP = 77,
-    IP = 78,
+    // R9 = 75,
+    // R10 = 76,
+    // R11 = 77,
+    // R12 = 78,
     S0 = 79,
     S1 = 80,
     S2 = 81,
@@ -91,7 +95,7 @@ pub enum RegisterARM {
     S5 = 84,
     S6 = 85,
     S7 = 86,
-    S8 = 87,
+    // S8 = 87,
     S9 = 88,
     S10 = 89,
     S11 = 90,
@@ -115,4 +119,23 @@ pub enum RegisterARM {
     S29 = 108,
     S30 = 109,
     S31 = 110,
+    C1_C0_2 = 111,
+    C13_C0_2 = 112,
+    C13_C0_3 = 113,
+    IPSR = 114,
+    MSP = 115,
+    PSP = 116,
+    CONTROL = 117,
+    XPSR = 118,
+    ENDING = 119,
+
+    // alias registers
+    // R13 = 12,
+    // R14 = 10,
+    // R15 = 11,
+    SB = 75,
+    SL = 76,
+    FP = 77,
+    IP = 78,
+
 }

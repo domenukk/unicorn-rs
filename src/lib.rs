@@ -253,7 +253,7 @@ pub trait Cpu<'a> {
     /// Add a "syscall" or "sysenter" instruction hook.
     fn add_insn_sys_hook<F>(
         &self,
-        insn_type: InsnSysX86,
+        insn_type: InsnX86,
         begin: u64,
         end: u64,
         callback: F,
@@ -841,7 +841,7 @@ impl<'a> Unicorn<'a> {
     /// Add a "syscall" or "sysenter" instruction hook.
     pub fn add_insn_sys_hook<F>(
         &self,
-        insn_type: InsnSysX86,
+        insn_type: InsnX86,
         begin: u64,
         end: u64,
         callback: F,

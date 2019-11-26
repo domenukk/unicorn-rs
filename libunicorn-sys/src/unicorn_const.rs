@@ -54,7 +54,7 @@ pub enum Error {
     OK = 0,          // No error: everything was fine
     NOMEM,           // Out-Of-Memory error: uc_open(), uc_emulate()
     ARCH,            // Unsupported architecture: uc_open()
-    HANDLE,          // Invalid handle
+    HANDLE,          // Invalid handl
     MODE,            // Invalid/unsupported mode: uc_open()
     VERSION,         // Unsupported version (bindings)
     READ_UNMAPPED,   // Quit emulation due to READ on unmapped memory: uc_emu_start()
