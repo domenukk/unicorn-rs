@@ -81,24 +81,19 @@ fn get_vcvars_path_and_platform() -> (OsString, &'static str) {
 }
 
 fn main() {
-    println!("cargo:rerun-if-changed=unicorn");
+    println!("cargo:rerun-if-changed=unicornafl");
 
     if !build_helper::windows() {
         if Command::new("pkg-config").output().is_ok()
             && pkg_config::Config::new()
                 .atleast_version("1.0.0")
-                .probe("unicorn")
+                .probe("unicornafl")
                 .is_ok()
         {
             return;
         }
     }
 
-    if !Path::new("unicorn/.git").exists() {
-        let _ = Command::new("git")
-            .args(&["submodule", "update", "--init", "--depth", "5"])
-            .status();
-    }
     let out_dir = env::var("OUT_DIR").unwrap();
 
     let make_args = match os_type::current_platform().os_type {
@@ -134,7 +129,7 @@ fn main() {
                 OsStr::new(&platform_toolset),
                 OsStr::new(platform),
             ])
-            .current_dir("unicorn")
+            .current_dir("../../../")
             .status()
         {
             Ok(status) => status,
@@ -151,17 +146,16 @@ fn main() {
             Some(build_helper::SearchKind::Native),
             build_helper::out_dir(),
         );
-        link_lib(Some(build_helper::LibKind::Static), "unicorn_static");
+        link_lib(Some(build_helper::LibKind::Static), "unicornafl_static");
     } else {
-        // TODO(sduquette): the package build should fail if this command fails.
         let _ = Command::new("./make.sh")
             .args(&make_args)
-            .current_dir("unicorn")
+            .current_dir("../../../")
             .status();
 
-        let unicorn = "libunicorn.a";
+        let unicorn = "libunicornafl.a";
         let _ = Command::new("cp")
-            .current_dir("unicorn")
+            .current_dir("../../../")
             .arg(&unicorn)
             .arg(&out_dir)
             .status();
@@ -170,7 +164,7 @@ fn main() {
             Some(build_helper::SearchKind::Native),
             build_helper::out_dir(),
         );
-        link_lib(Some(build_helper::LibKind::Static), "unicorn");
+        link_lib(Some(build_helper::LibKind::Static), "unicornafl");
     }
 }
 
