@@ -92,6 +92,31 @@ extern "C" {
     pub fn uc_context_alloc(engine: uc_handle, context: *mut uc_context) -> Error;
     pub fn uc_context_save(engine: uc_handle, context: uc_context) -> Error;
     pub fn uc_context_restore(engine: uc_handle, context: uc_context) -> Error;
+
+    pub fn uc_afl_fuzz(
+        engine: uc_handle, 
+        input_file: *const u8,
+        place_input_callback: libc::size_t, 
+        exits: *const u64,
+        exit_count: libc::size_t,
+        validate_crash_callback: libc:: size_t,
+        always_validate: bool,
+        persistent_iters: u32,
+        data: *const c_void
+    ) -> unicorn_const::AflRet;
+
+    pub fn uc_afl_forkserver_start(
+        engine: uc_handle,
+        exits: *const u64,
+        exit_count: libc::size_t
+    ) -> unicorn_const::AflRet;
+
+    /* A start with "less features" for our afl use-case */
+    /* this is largely copied from uc_emu_start, just without setting the entry point, counter and timeout. */
+    pub fn uc_afl_emu_start(engine: uc_handle) -> Error;
+
+    pub fn uc_afl_next(engine: uc_handle) -> unicorn_const::AflRet;
+
 }
 
 impl Error {

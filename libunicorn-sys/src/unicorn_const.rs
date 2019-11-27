@@ -88,10 +88,10 @@ pub enum Error {
 #[derive(PartialEq, Debug, Clone, Copy)]
 pub enum AflRet {
 
-    RET_ERROR = 0,
-    RET_CHILD = 1,
-    RET_NO_AFL = 2,
-    RET_FINISHED = 3,
+    ERROR = 0,
+    CHILD = 1,
+    NO_AFL = 2,
+    FINISHED = 3,
 }
 
 #[repr(C)]

@@ -290,6 +290,10 @@ pub trait Cpu<'a> {
     fn context_restore(&self, context: &Context) -> Result<()> {
         self.emu().context_restore(context)
     }
+
+    fn afl_forkserver_start(&self, exits: &[u64]) -> AflRet {
+        self.emu().afl_forkserver_start(exits)
+    }
 }
 
 implement_emulator!(
@@ -401,6 +405,11 @@ type MemHook<'a> =
 type InsnInHook<'a> = UnicornHook<'a, Box<dyn 'a + FnMut(&'a Unicorn<'a>, u32, usize) -> u32>>;
 type InsnOutHook<'a> = UnicornHook<'a, Box<dyn 'a + FnMut(&'a Unicorn<'a>, u32, usize, u32)>>;
 type InsnSysHook<'a> = UnicornHook<'a, Box<dyn 'a + FnMut(&'a Unicorn<'a>)>>;
+
+/*
+type PlaceInputCallback<'a> = UnicornHook<'a, Box<dyn 'a + FnMut(&'a Unicorn<'a>, &[u8], u32)>>;
+type ValidateCrashCallback<'a> = UnicornHook<'a, Box<dyn 'a + FnMut(&'a Unicorn<'a>, Error, &[u8], u32)>>;
+*/
 
 /// Internal : A Unicorn emulator instance, use one of the Cpu structs instead.
 pub struct Unicorn<'a> {
@@ -957,6 +966,36 @@ impl<'a> Unicorn<'a> {
             Err(err)
         }
     }
+
+    pub fn afl_forkserver_start(&self, exits: &[u64]) -> AflRet {
+        unsafe {
+            uc_afl_forkserver_start(
+                self.handle,
+                exits.as_ptr(),
+                exits.len()
+            )
+        }
+    }
+
+    /*
+    pub fn afl_fuzz<F>(&self, 
+        input_file: &str,
+        place_input_callback: F,
+        exits: &[u64],
+        //TODO exit_count: libc::size_t,
+        //validate_crash_callback: F,
+        always_validate: bool,
+        persistent_iters: u32,
+        //data: 
+    ) -> unicorn_const::AflRet
+        where
+            F: 'a + FnMut(&'a Unicorn<'a>, &[u8], u32),
+            //F: 'a + FnMut(&'a Unicorn<'a>, Error, &[u8], u32),
+    {
+        AflRet::CHILD
+    }
+    */
+
 }
 
 impl Drop for Unicorn<'_> {
