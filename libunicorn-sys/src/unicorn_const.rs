@@ -35,27 +35,41 @@ pub enum Mode {
     // use LITTLE_ENDIAN.
     // MODE_ARM = 0,
     THUMB = 16,
-    // MCLASS = 32,
-    // V8 = 64,
+    MCLASS = 32,
+    V8 = 64,
     ARM926 = 128,
     ARM946 = 256,
     ARM1176 = 512,
-    // MICRO = 16,
-    MIPS3 = 32,
-    MIPS32R6 = 64,
-    // MIPS32 = 4,
-    // MIPS64 = 8,
+    // (assoc) MICRO = 16,
+    // (assoc) MIPS3 = 32,
+    // (assoc) MIPS32R6 = 64,
+    MIPS32 = 4,
+    MIPS64 = 8,
     MODE_16 = 2,
-    MODE_32 = 4,
-    MODE_64 = 8,
-    // PPC32 = 4,
-    // PPC64 = 8,
-    // QPX = 16,
-    // SPARC32 = 4,
-    // SPARC64 = 8,
-    // V9 = 16,
+    // (assoc) MODE_32 = 4,
+    // (assoc) MODE_64 = 8,
+    // (assoc) PPC32 = 4,
+    // (assoc) PPC64 = 8,
+    // (assoc) QPX = 16,
+    // (assoc) SPARC32 = 4,
+    // (assoc) SPARC64 = 8,
+    // (assoc) V9 = 16,
 }
 
+impl Mode {
+    pub const MICRO: Mode = Mode::THUMB;
+    pub const MIPS3: Mode = Mode::MCLASS;
+    pub const MIPS32R6: Mode = Mode::V8;
+    pub const MODE_32: Mode = Mode::MIPS32;
+    pub const MODE_64: Mode = Mode::MIPS64;
+    pub const PPC32: Mode = Mode::MIPS32;
+    pub const PPC64: Mode = Mode::MIPS64;
+    pub const QPX: Mode = Mode::THUMB;
+    pub const SPARC32: Mode = Mode::MIPS32;
+    pub const SPARC64: Mode = Mode::MIPS64;
+    pub const V9: Mode = Mode::THUMB;
+
+}
 #[repr(C)]
 #[derive(PartialEq, Debug, Clone, Copy)]
 pub enum Error {

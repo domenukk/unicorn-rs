@@ -98,6 +98,11 @@ pub enum RegisterSPARC {
     XCC = 87,
     PC = 88,
     ENDING = 89,
-    // O6 = 84,
-    // I6 = 67,
+    // (assoc) O6 = 84,
+    // (assoc) I6 = 67,
+}
+impl RegisterSPARC {
+    pub const O6: RegisterSPARC = RegisterSPARC::SP;
+    pub const I6: RegisterSPARC = RegisterSPARC::FP;
+
 }

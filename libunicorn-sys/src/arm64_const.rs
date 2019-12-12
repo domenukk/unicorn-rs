@@ -9,8 +9,8 @@ pub enum RegisterARM64 {
     // ARM64 registers
 
     INVALID = 0,
-    // X29 = 1,
-    // X30 = 2,
+    X29 = 1,
+    X30 = 2,
     NZCV = 3,
     SP = 4,
     WSP = 5,
@@ -152,7 +152,7 @@ pub enum RegisterARM64 {
     S5 = 141,
     S6 = 142,
     S7 = 143,
-    // S8 = 144,
+    S8 = 144,
     S9 = 145,
     S10 = 146,
     S11 = 147,
@@ -223,8 +223,8 @@ pub enum RegisterARM64 {
     X13 = 212,
     X14 = 213,
     X15 = 214,
-    // X16 = 215,
-    // X17 = 216,
+    X16 = 215,
+    X17 = 216,
     X18 = 217,
     X19 = 218,
     X20 = 219,
@@ -280,8 +280,15 @@ pub enum RegisterARM64 {
     ENDING = 265,
 
     // alias registers
-    IP0 = 215,
-    IP1 = 216,
-    FP = 1,
-    LR = 2,
+    // (assoc) IP0 = 215,
+    // (assoc) IP1 = 216,
+    // (assoc) FP = 1,
+    // (assoc) LR = 2,
+}
+impl RegisterARM64 {
+    pub const IP0: RegisterARM64 = RegisterARM64::X16;
+    pub const IP1: RegisterARM64 = RegisterARM64::X17;
+    pub const FP: RegisterARM64 = RegisterARM64::X29;
+    pub const LR: RegisterARM64 = RegisterARM64::X30;
+
 }

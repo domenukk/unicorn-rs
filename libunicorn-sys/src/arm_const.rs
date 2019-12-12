@@ -83,10 +83,10 @@ pub enum RegisterARM {
     R6 = 72,
     R7 = 73,
     R8 = 74,
-    // R9 = 75,
-    // R10 = 76,
-    // R11 = 77,
-    // R12 = 78,
+    R9 = 75,
+    R10 = 76,
+    R11 = 77,
+    R12 = 78,
     S0 = 79,
     S1 = 80,
     S2 = 81,
@@ -95,7 +95,7 @@ pub enum RegisterARM {
     S5 = 84,
     S6 = 85,
     S7 = 86,
-    // S8 = 87,
+    S8 = 87,
     S9 = 88,
     S10 = 89,
     S11 = 90,
@@ -130,11 +130,21 @@ pub enum RegisterARM {
     ENDING = 119,
 
     // alias registers
-    // R13 = 12,
-    // R14 = 10,
-    // R15 = 11,
-    SB = 75,
-    SL = 76,
-    FP = 77,
-    IP = 78,
+    // (assoc) R13 = 12,
+    // (assoc) R14 = 10,
+    // (assoc) R15 = 11,
+    // (assoc) SB = 75,
+    // (assoc) SL = 76,
+    // (assoc) FP = 77,
+    // (assoc) IP = 78,
+}
+impl RegisterARM {
+    pub const R13: RegisterARM = RegisterARM::SP;
+    pub const R14: RegisterARM = RegisterARM::LR;
+    pub const R15: RegisterARM = RegisterARM::PC;
+    pub const SB: RegisterARM = RegisterARM::R9;
+    pub const SL: RegisterARM = RegisterARM::R10;
+    pub const FP: RegisterARM = RegisterARM::R11;
+    pub const IP: RegisterARM = RegisterARM::R12;
+
 }
