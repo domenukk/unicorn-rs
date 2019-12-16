@@ -93,17 +93,57 @@ extern "C" {
     pub fn uc_context_save(engine: uc_handle, context: uc_context) -> Error;
     pub fn uc_context_restore(engine: uc_handle, context: uc_context) -> Error;
 
+
+/* Callback function called for each input from AFL.
+ This function is mandatory.
+ It's purpose is to place the input at the right place in unicorn.
+
+ @uc: Unicorn instance
+ @input: The current input we're workin on. Place this somewhere in unicorn's memory now.
+ @input_len: length of the input
+ @persistent_round: which round we are currently crashing in, if using persistent mode.
+ @data: Data pointer passed to uc_afl_fuzz(...).
+
+ @return:
+  If you return is true, all is well. Fuzzing starts.
+  If you return false, something has gone wrong. the execution loop will exit. 
+    There should be no reason to do this in a usual usecase.
+*/
+//typedef bool (*uc_afl_cb_place_input_t)(uc_engine *uc, char *input, size_t input_len, uint32_t persistent_round, void *data);
+
+/* Callback function called after a non-UC_ERR_OK returncode was returned by Unicorn. 
+ This function is not mandatory (pass NULL).
+ @uc: Unicorn instance
+ @unicorn_result: The error state returned by the current testcase
+ @input: The current input we're workin with.
+ @input_len: length of the input
+ @persistent_round: which round we are currently crashing in, if using persistent mode.
+ @data: Data pointer passed to uc_afl_fuzz(...).
+
+@Return:
+  If you return false, the crash is considered invalid and not reported to AFL.
+  If return is true, the crash is reported. 
+  -> The child will die and the forkserver will spawn a new child.
+*/
+//typedef bool (*uc_afl_cb_validate_crash_t)(uc_engine *uc, uc_err unicorn_result, char *input, int input_len, int persistent_round, void *data);
+
+//typedef bool (*uc_afl_cb_place_input_t)(uc_engine *uc, char *input, size_t input_len, uint32_t persistent_round, void *data);
     pub fn uc_afl_fuzz(
         engine: uc_handle, 
         input_file: *const u8,
-        place_input_callback: libc::size_t, 
+        place_input_callback: *mut libc::c_void,
         exits: *const u64,
         exit_count: libc::size_t,
-        validate_crash_callback: libc:: size_t,
+        validate_crash_callback: *mut libc::c_void,
         always_validate: bool,
         persistent_iters: u32,
         data: *const c_void
     ) -> unicorn_const::AflRet;
+
+        //where F:
+        //    Fn(uc_handle, Error, libc::c_void, libc::c_int, libc::c_int, libc::c_void) -> bool;
+        
+        // Fn<libc::bool, uc_handle, Error, libc::void, libc::int, libc::int, libc::void>, 
 
     pub fn uc_afl_forkserver_start(
         engine: uc_handle,
