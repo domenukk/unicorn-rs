@@ -349,8 +349,8 @@ implement_emulator!(
 /// Struct containing callbacks to afl_fuzz
 pub struct AflFuzzCallbacks<'a> {
     unicorn: *const Unicorn<'a>,
-    place_input_callback: &'a dyn Fn(&*const Unicorn<'a>, &[u8], i32) -> bool,
-    validate_crash_callback: &'a dyn Fn(&*const Unicorn<'a>, Error, &[u8], i32) -> bool
+    place_input_callback: Box<(dyn 'a + FnMut(&*const Unicorn<'a>, &[u8], i32) -> bool)>,
+    validate_crash_callback: Box<(dyn 'a + FnMut(&*const Unicorn<'a>, Error, &[u8], i32) -> bool)>
 }
 
 /// Struct to bind a unicorn instance to a callback.
@@ -407,7 +407,7 @@ extern "C" fn insn_sys_hook_proxy(_: uc_handle, user_data: *mut InsnSysHook<'_>)
     callback(unicorn)
 }
 
-extern "C" fn afl_place_input_callback_proxy<'a>(
+extern "C" fn afl_place_input_callback_proxy(
     _: uc_handle, 
     input: *const u8, 
     input_len: libc::c_int, 
@@ -417,13 +417,13 @@ extern "C" fn afl_place_input_callback_proxy<'a>(
     let data = unsafe { &mut *(user_data as *mut AflFuzzCallbacks<'_>) };
     let input_slice = unsafe{ slice::from_raw_parts(input, input_len as usize) };
     (data.place_input_callback)(
-        &data.unicorn, 
+        &data.unicorn,
         input_slice, 
         i32::try_from(persistent_round).unwrap()
     )
 }
 
-extern "C" fn afl_validate_crash_callback_proxy<'a>(
+extern "C" fn afl_validate_crash_callback_proxy<'a, 'b>(
     _: uc_handle, 
     unicorn_result: Error,
     input: *const u8, 
@@ -432,6 +432,7 @@ extern "C" fn afl_validate_crash_callback_proxy<'a>(
     user_data: *mut libc::c_void
 ) -> bool {
     let data = unsafe { &mut *(user_data as *mut AflFuzzCallbacks<'_>) };
+
     let input_slice = unsafe{ slice::from_raw_parts(input, input_len as usize) };
     (data.validate_crash_callback)(
         &data.unicorn, 
@@ -449,8 +450,8 @@ type InsnInHook<'a> = UnicornHook<'a, Box<dyn 'a + FnMut(&'a Unicorn<'a>, u32, u
 type InsnOutHook<'a> = UnicornHook<'a, Box<dyn 'a + FnMut(&'a Unicorn<'a>, u32, usize, u32)>>;
 type InsnSysHook<'a> = UnicornHook<'a, Box<dyn 'a + FnMut(&'a Unicorn<'a>)>>;
 
-type AflPlaceInputCallback<'a> = dyn Fn(&*const Unicorn<'a>, &[u8], u32) -> bool;
-type AflValidateCrashCallback<'a> = dyn Fn(&*const Unicorn<'a>, Error, &[u8], u32) -> bool;
+//type AflPlaceInputCallback<'a> = dyn Fn(&*const Unicorn<'a>, &[u8], u32) -> bool;
+//type AflValidateCrashCallback<'a> = dyn Fn(&*const Unicorn<'a>, Error, &[u8], u32) -> bool;
 //type PlaceInputCallback<'a> = UnicornHook<'a, Box<dyn 'a + FnMut(&'a Unicorn<'a>, &[u8], u32) -> bool>>;
 //type ValidateCrashCallback<'a> = UnicornHook<'a, Box<dyn 'a + FnMut(&'a Unicorn<'a>, Error, &[u8], u32) -> bool>>;
 
@@ -1029,15 +1030,13 @@ impl<'a> Unicorn<'a> {
         input_file: &str,
         place_input_callback: F,
         exits: &[u64],
-        //TODO exit_count: libc::size_t,
         validate_crash_callback: G,
         always_validate: bool,
         persistent_iters: u32
     ) -> unicorn_const::AflRet
-        where
-            F: 'a + Fn(&*const Unicorn<'a>, &[u8], i32) -> bool,
-            G: 'a + Fn(&*const Unicorn<'a>, Error, &[u8], i32) -> bool
-            //F: 'a + FnMut(&'a Unicorn<'a>, Error, &[u8], u32),
+            where
+                F: 'a + FnMut(&*const Unicorn<'a>, &[u8], i32) -> bool,
+                G: 'a + FnMut(&*const Unicorn<'a>, Error, &[u8], i32) -> bool
     {
 //(uc_handle, Error, libc::c_void, libc::c_int, libc::c_int, libc::c_void) -> bool;
 
@@ -1050,12 +1049,11 @@ impl<'a> Unicorn<'a> {
         //     let input_slice = unsafe{ slice::from_raw_parts(input, input_len as usize) };
         //     validate_crash_callback(&self, unicorn_result, input_slice, i32::try_from(persistent_round).unwrap(), &data)
         // };
-
-        let afl_fuzz_callbacks = AflFuzzCallbacks {
+        let afl_fuzz_callbacks = Box::new(AflFuzzCallbacks {
             unicorn: self,
-            place_input_callback: &place_input_callback,
-            validate_crash_callback: &validate_crash_callback,
-        };
+            place_input_callback: Box::new(place_input_callback),
+            validate_crash_callback: Box::new(validate_crash_callback),
+        });
 
         unsafe { uc_afl_fuzz(
             self.handle,
@@ -1070,6 +1068,29 @@ impl<'a> Unicorn<'a> {
         ) }
     }
 }
+
+// //typedef bool (*uc_afl_cb_place_input_t)(uc_engine *uc, char *input, size_t input_len, uint32_t persistent_round, void *data);
+// pub fn raw_place_input_callback(_uc: uc_handle, input: *const u8, input_len: libc::c_int, persistent_round: libc::c_int, _data: libc::c_void) {
+//     let input_slice = unsafe{ slice::from_raw_parts(input, input_len as usize) };
+// }
+
+// pub fn raw_validate_crash() {
+
+// }
+
+// impl AflFuzzCallbackHandler for Unicorn<'_> {
+//     fn place_input(&mut self, destination: &[u8], len: i32) -> bool {
+//         true
+//     }
+//     fn validate_crash(&mut self) {
+
+//     }
+// }
+
+trait AflFuzzCallbackHandler {
+    fn place_input(&mut self, destination: &[u8], len: i32) -> bool;
+    fn validate_crash(&mut self);
+} 
 
 impl Drop for Unicorn<'_> {
     fn drop(&mut self) {
